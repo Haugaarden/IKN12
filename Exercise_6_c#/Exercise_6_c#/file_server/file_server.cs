@@ -75,9 +75,9 @@ namespace tcp
 		{
 			Stream fileStream = File.OpenRead(fileName);	//Opens filestream
 
-			uint count = 0;	//count for the offset in filestream.Read
+			int count = 0;	//count for the offset in filestream.Read
 
-			while(1)
+			while(true)
 			{
 				var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
 				int status = fileStream.Read(fileBuffer, BUFSIZE * count, BUFSIZE);	//reads BUFSIZE amount of bytes into fileBuffer. Starts at byte number BUFSIZE * count. Status is number f bytes read
@@ -88,7 +88,7 @@ namespace tcp
 					//If the number of bytes read are less than the expected amount. Means that there's no more bytes left to read
 					if(status < BUFSIZE)
 					{
-						fileBuffer = (byte[])ResizeArray(fileBuffer, new byte[] { status });	//Resize fileBuffer to be smaller (the size of status)
+						Array.Resize(ref fileBuffer, status);	//Resize fileBuffer to be smaller (the size of status)
 					}
 						
 					var fileString = System.Text.Encoding.ASCII.GetString(fileBuffer);	//Convert byteArray to string
