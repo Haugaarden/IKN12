@@ -28,7 +28,7 @@ namespace tcp
 		/// </summary>
 		private file_server()
 		{
-			String dataDir = "";
+			String dataDir = "/root/ServerData/";
 
 			var serverSocket = new TcpListener(IPAddress.Any, PORT);   //Listens on PORT
 			var clientSocket = default(TcpClient);
@@ -45,7 +45,9 @@ namespace tcp
 			{
 				Console.WriteLine("Reading filename");
 				fileName = LIB.readTextTCP(networkStream);
+				Console.WriteLine("Filename: " + fileName);
 				fileSize = LIB.check_File_Exists(dataDir + fileName);
+				Console.WriteLine("Filesize: " + fileSize);
 			} while (fileSize == 0);
 
 			LIB.writeTextTCP(networkStream, fileSize.ToString());
