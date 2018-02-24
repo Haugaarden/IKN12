@@ -47,6 +47,7 @@ namespace tcp
 				fileName = LIB.readTextTCP(networkStream);
 				Console.WriteLine("Filename: " + fileName);
 				fileSize = LIB.check_File_Exists(dataDir + fileName);
+				Console.WriteLine("Filepath: " + dataDir + fileName);
 				Console.WriteLine("Filesize: " + fileSize);
 			} while (fileSize == 0);
 
@@ -92,6 +93,8 @@ namespace tcp
 					{
 						Array.Resize(ref fileBuffer, status);	//Resize fileBuffer to be smaller (the size of status)
 					}
+
+					Console.WriteLine("Sending " + fileBuffer.Length + " bytes");
 						
 					var fileString = System.Text.Encoding.ASCII.GetString(fileBuffer);	//Convert byteArray to string
 					LIB.writeTextTCP(io, fileString);	//Send string
@@ -101,6 +104,7 @@ namespace tcp
 					break;	//No bytes were read
 				}
 			}
+			Console.WriteLine("Done sending");
 		}
 
 		/// <summary>
