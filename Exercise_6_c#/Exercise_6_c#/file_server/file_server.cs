@@ -49,9 +49,9 @@ namespace tcp
 				fileSize = LIB.check_File_Exists(dataDir + fileName);
 				Console.WriteLine("Filepath: " + dataDir + fileName);
 				Console.WriteLine("Filesize: " + fileSize);
-			} while (fileSize == 0);
 
-			LIB.writeTextTCP(networkStream, fileSize.ToString());
+				LIB.writeTextTCP(networkStream, fileSize.ToString("0"));
+			} while (fileSize == 0);
 
 			sendFile(fileName, fileSize, networkStream);
 
