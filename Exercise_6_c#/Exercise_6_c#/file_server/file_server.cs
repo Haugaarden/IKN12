@@ -24,7 +24,7 @@ namespace tcp
 		/// Modtager filnavn
 		/// Finder filstørrelsen
 		/// Kalder metoden sendFile
-		/// Lukker socketen og programmet.... IKKE
+		/// Lukker socketen og programmet... IKKE
 		/// </summary>
 		private file_server()
 		{
