@@ -28,7 +28,6 @@ namespace tcp
 			string ip = args[0];
 			string filename = args[1];
 
-			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient (); 
 			Console.WriteLine("Client Started");
 			clientSocket.Connect(ip, PORT);// TO DO Your own code
 			Console.WriteLine("Client connected");
@@ -48,7 +47,7 @@ namespace tcp
 		/// </param>
 		private void receiveFile (String fileName, NetworkStream io)
 		{
-			string fileSize;
+			string fileSize = "";
 			string dataDir = "/root/ExFiles/";
 			do 
 			{
@@ -59,14 +58,18 @@ namespace tcp
 				}
 				LIB.writeTextTCP(io, fileName);
 				fileSize = LIB.readTextTCP(io);
-				
+
 			} while(fileSize == "0");  
 
-			FileStream filestream = File.Create(dataDir, (int)fileSize); 
+			Console.WriteLine("Filesize: " + fileSize);
+
+			FileStream fileStream = File.Create(dataDir + fileName, int.Parse(fileSize)); 
+			string fileInput = LIB.readTextTCP(io);
+			var fileBytes = System.Text.Encoding.ASCII.GetBytes(fileInput);
 
 			var fileBuffer = new byte[BUFSIZE]; 
 
-			filestream.CopyTo(io);
+			fileStream.Write(fileBytes, 0, int.Parse(fileSize));
 
 		}
 

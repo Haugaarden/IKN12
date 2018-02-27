@@ -53,7 +53,7 @@ namespace tcp
 				LIB.writeTextTCP(networkStream, fileSize.ToString("0"));
 			} while (fileSize == 0);
 
-			sendFile(fileName, fileSize, networkStream);
+			sendFile(dataDir + fileName, fileSize, networkStream);
 
 			//Cleaning
 			clientSocket.Close();
@@ -83,7 +83,7 @@ namespace tcp
 			while(true)
 			{
 				var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
-				int status = fileStream.Read(fileBuffer, BUFSIZE * count, BUFSIZE);	//reads BUFSIZE amount of bytes into fileBuffer. Starts at byte number BUFSIZE * count. Status is number f bytes read
+				int status = fileStream.Read(fileBuffer, 0, BUFSIZE);	//reads BUFSIZE amount of bytes into fileBuffer. Starts at byte number BUFSIZE * count. Status is number f bytes read
 
 				//If any bytes are read
 				if(status > 0)
