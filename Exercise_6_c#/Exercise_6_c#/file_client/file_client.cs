@@ -16,6 +16,7 @@ namespace tcp
 		/// </summary>
 		const int BUFSIZE = 1000;
 
+		System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient (); 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="file_client"/> class.
 		/// </summary>
@@ -24,7 +25,16 @@ namespace tcp
 		/// </param>
 		private file_client (string[] args)
 		{
-			// TO DO Your own code
+			string ip = args[0];
+			string filename = args[1];
+
+			System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient (); 
+			Console.WriteLine("Client Started");
+			clientSocket.Connect(ip, PORT);// TO DO Your own code
+			Console.WriteLine("Client connected");
+			var networkStream = clientSocket.GetStream();
+			receiveFile (filename, networkStream);
+			clientSocket.Close(); 
 		}
 
 		/// <summary>
@@ -38,7 +48,26 @@ namespace tcp
 		/// </param>
 		private void receiveFile (String fileName, NetworkStream io)
 		{
-			// TO DO Your own code
+			string fileSize;
+			string dataDir = "/root/ExFiles/";
+			do 
+			{
+				if(fileSize == "0")
+				{
+					Console.WriteLine("file does not exist, write filename:");
+					fileName = Console.ReadLine(); 
+				}
+				LIB.writeTextTCP(io, fileName);
+				fileSize = LIB.readTextTCP(io);
+				
+			} while(fileSize == "0");  
+
+			FileStream filestream = File.Create(dataDir, (int)fileSize); 
+
+			var fileBuffer = new byte[BUFSIZE]; 
+
+			filestream.CopyTo(io);
+
 		}
 
 		/// <summary>
