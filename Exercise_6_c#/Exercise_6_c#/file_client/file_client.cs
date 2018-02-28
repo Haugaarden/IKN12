@@ -63,11 +63,14 @@ namespace tcp
 
 			Console.WriteLine("Filesize: " + fileSize);
 
+			Console.WriteLine("Int Filsize: " + int.Parse(fileSize));
 			FileStream fileStream = File.Create(dataDir + fileName, int.Parse(fileSize)); 
-			string fileInput = LIB.readTextTCP(io);
+			string fileInput = LIB.readTextTCP(io);	//Do not use readText. Will stop prematurely
+
+			Console.WriteLine("String length: " + fileInput.Length);
 			var fileBytes = System.Text.Encoding.ASCII.GetBytes(fileInput);
 
-			var fileBuffer = new byte[BUFSIZE]; 
+			Console.WriteLine("Filebytes: " + fileBytes.Length);
 
 			fileStream.Write(fileBytes, 0, int.Parse(fileSize));
 
