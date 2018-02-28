@@ -96,8 +96,7 @@ namespace tcp
 
 					Console.WriteLine("Sending " + fileBuffer.Length + " bytes");
 						
-					var fileString = System.Text.Encoding.ASCII.GetString(fileBuffer);	//Convert byteArray to string
-					LIB.writeTextTCP(io, fileString);	//Send string
+					io.Write(fileBuffer, 0, status);	//Send bytes
 					count++;	//Increment count for larger offset
 				} else
 				{

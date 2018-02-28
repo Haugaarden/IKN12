@@ -53,7 +53,7 @@ namespace tcp
 			{
 				if(fileSize == "0")
 				{
-					Console.WriteLine("file does not exist, write filename:");
+					Console.WriteLine("File does not exist, write filename:");
 					fileName = Console.ReadLine(); 
 				}
 				LIB.writeTextTCP(io, fileName);
@@ -63,16 +63,17 @@ namespace tcp
 
 			Console.WriteLine("Filesize: " + fileSize);
 
-			Console.WriteLine("Int Filsize: " + int.Parse(fileSize));
 			FileStream fileStream = File.Create(dataDir + fileName, int.Parse(fileSize)); 
-			string fileInput = LIB.readTextTCP(io);	//Do not use readText. Will stop prematurely
 
-			Console.WriteLine("String length: " + fileInput.Length);
-			var fileBytes = System.Text.Encoding.ASCII.GetBytes(fileInput);
+			var fileBytes = new byte [int.Parse(fileSize)];
+
+			io.Read(fileBytes, 0, int.Parse(fileSize));
 
 			Console.WriteLine("Filebytes: " + fileBytes.Length);
 
+			Console.WriteLine("Reading...");
 			fileStream.Write(fileBytes, 0, int.Parse(fileSize));
+			Console.WriteLine("Done reading");
 
 		}
 
