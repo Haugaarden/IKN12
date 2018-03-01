@@ -78,31 +78,18 @@ namespace tcp
 		{
 			Stream fileStream = File.OpenRead(fileName);	//Opens filestream
 
-			int count = 0;	//count for the offset in filestream.Read
+			var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
 
-			while(true)
+			int bytesToSend = 0;
+
+			while((bytesToSend = fileStream.Read(fileBuffer, 0, fileBuffer.Length)) > 0) //I exist to keep sending bytes until I only got 0 bytes to send left 
 			{
-				var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
-				int status = fileStream.Read(fileBuffer, 0, BUFSIZE);	//reads BUFSIZE amount of bytes into fileBuffer. Starts at byte number BUFSIZE * count. Status is number f bytes read
+				io.Write(fileBuffer, 0, bytesToSend); //I must send that byte
 
-				//If any bytes are read
-				if(status > 0)
-				{
-					//If the number of bytes read are less than the expected amount. Means that there's no more bytes left to read
-					if(status < BUFSIZE)
-					{
-						Array.Resize(ref fileBuffer, status);	//Resize fileBuffer to be smaller (the size of status)
-					}
+				Console.WriteLine($"Sent {bytesToSend} bytes");
 
-					Console.WriteLine("Sending " + fileBuffer.Length + " bytes");
-						
-					io.Write(fileBuffer, 0, status);	//Send bytes
-					count++;	//Increment count for larger offset
-				} else
-				{
-					break;	//No bytes were read
-				}
 			}
+
 			Console.WriteLine("Done sending");
 		}
 

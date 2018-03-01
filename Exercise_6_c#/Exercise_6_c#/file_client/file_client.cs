@@ -47,33 +47,42 @@ namespace tcp
 		/// </param>
 		private void receiveFile (String fileName, NetworkStream io)
 		{
-			string fileSize = "";
-			string dataDir = "/root/ExFiles/";
+			//If file does not exist on the server, the user can input another filename. Won't continue untill a correct name is input
+			long fileSize = 0;
 			do 
 			{
-				if(fileSize == "0")
+				LIB.writeTextTCP(io, fileName);	//Sends filename to server
+				fileSize = LIB.getFileSizeTCP(io);	//Reads filesize from server
+
+				//If file does not exist, get new filename
+				if(fileSize == 0)
 				{
 					Console.WriteLine("File does not exist, write filename:");
 					fileName = Console.ReadLine(); 
 				}
-				LIB.writeTextTCP(io, fileName);
-				fileSize = LIB.readTextTCP(io);
 
-			} while(fileSize == "0");  
+			} while(fileSize == 0);
+
 
 			Console.WriteLine("Filesize: " + fileSize);
 
-			FileStream fileStream = File.Create(dataDir + fileName, int.Parse(fileSize)); 
-
-			var fileBytes = new byte [int.Parse(fileSize)];
-
-			io.Read(fileBytes, 0, int.Parse(fileSize));
-
-			Console.WriteLine("Filebytes: " + fileBytes.Length);
+			string dataDir = "/root/ExFiles/";	//filepath to save file to
+			FileStream fileStream = new FileStream (dataDir + fileName, FileMode.Create, FileAccess.Write);	//Creates file and return filestream
+			var fileBuffer = new byte [BUFSIZE];	//Buffer for holding filedata packets
 
 			Console.WriteLine("Reading...");
-			fileStream.Write(fileBytes, 0, int.Parse(fileSize));
+
+			int bytesRead = 0;
+			int totalBytesRead = 0;
+			while(totalBytesRead < fileSize)
+			{
+				bytesRead = io.Read(fileBuffer, 0, BUFSIZE);
+				fileStream.Write(fileBuffer, 0, bytesRead);
+				totalBytesRead += bytesRead;
+			}
+				
 			Console.WriteLine("Done reading");
+			fileStream.Close();
 
 		}
 
