@@ -59,7 +59,6 @@ namespace tcp
 			clientSocket.Close();
 			serverSocket.Stop();
 			Console.WriteLine("Exit");
-			Console.ReadKey();
 		}
 
 		/// <summary>
@@ -102,7 +101,10 @@ namespace tcp
 		public static void Main(string[] args)
 		{
 			Console.WriteLine("Server starts...");
-			new file_server();
+			while(true)
+			{
+				new file_server();
+			}
 		}
 	}
 }
