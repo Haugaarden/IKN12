@@ -67,6 +67,7 @@ namespace tcp
 			Console.WriteLine("Filesize: " + fileSize);
 
 			string dataDir = "/root/ExFiles/";	//filepath to save file to
+			Directory.CreateDirectory(dataDir);	//Create directory if it does not exist
 			FileStream fileStream = new FileStream (dataDir + fileName, FileMode.Create, FileAccess.Write);	//Creates file and return filestream
 			var fileBuffer = new byte [BUFSIZE];	//Buffer for holding filedata packets
 
