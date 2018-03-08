@@ -95,6 +95,7 @@ namespace tcp
 		/// </param>
 		public static void Main (string[] args)
 		{
+			//Checks the number of arguments. Will terminate if there's less than 2 arguments
 			if(args.Length >= 2)
 			{
 				Console.WriteLine("Client starts...");
