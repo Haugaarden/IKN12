@@ -95,8 +95,15 @@ namespace tcp
 		/// </param>
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Client starts...");
-			new file_client(args);
+			if(args.Length >= 2)
+			{
+				Console.WriteLine("Client starts...");
+				new file_client(args);
+			} else
+			{
+				Console.WriteLine("This program needs 2 arguments. IP address and filename");
+				Console.WriteLine("Terminating");
+			}
 		}
 	}
 }
