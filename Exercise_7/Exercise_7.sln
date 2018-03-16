@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDP_Server", "UDP_Server\UDP_Server.csproj", "{180CE7E8-CDD3-40C9-9A4E-55640ABF1417}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDP_Client", "UDP_Client\UDP_Client.csproj", "{29624398-BDC9-439E-9ED6-E479045B28DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{180CE7E8-CDD3-40C9-9A4E-55640ABF1417}.Debug|x86.ActiveCfg = Debug|x86
+		{180CE7E8-CDD3-40C9-9A4E-55640ABF1417}.Debug|x86.Build.0 = Debug|x86
+		{180CE7E8-CDD3-40C9-9A4E-55640ABF1417}.Release|x86.ActiveCfg = Release|x86
+		{180CE7E8-CDD3-40C9-9A4E-55640ABF1417}.Release|x86.Build.0 = Release|x86
+		{29624398-BDC9-439E-9ED6-E479045B28DA}.Debug|x86.ActiveCfg = Debug|x86
+		{29624398-BDC9-439E-9ED6-E479045B28DA}.Debug|x86.Build.0 = Debug|x86
+		{29624398-BDC9-439E-9ED6-E479045B28DA}.Release|x86.ActiveCfg = Release|x86
+		{29624398-BDC9-439E-9ED6-E479045B28DA}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = file_server\file_server.csproj
+	EndGlobalSection
+EndGlobal
