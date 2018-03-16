@@ -85,7 +85,7 @@ namespace tcp
 			{
 				io.Write(fileBuffer, 0, bytesToSend); //I must send that byte
 
-				Console.WriteLine($"Sent {bytesToSend} bytes");
+				Console.WriteLine("Sent " + bytesToSend + " bytes");
 
 			}
 
