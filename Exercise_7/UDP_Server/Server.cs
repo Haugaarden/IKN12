@@ -24,7 +24,7 @@ namespace UDP
 				string returnData;
 				do
 				{
-					returnData = Encoding.ASCII.GetString(receiveBytes).ToLower;
+					returnData = Encoding.ASCII.GetString(receiveBytes).ToLower();
 					Console.WriteLine(returnData);
 
 				} while(!returnData.Equals("u") || !returnData.Equals("l"));
