@@ -1,0 +1,35 @@
+1 og 2: 10.0.0.2 til 10.0.0.1:
+64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.340 ms
+64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=1.03 ms
+64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=1.00 ms
+64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.950 ms
+64 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.943 ms
+64 bytes from 10.0.0.1: icmp_seq=6 ttl=64 time=0.586 ms
+64 bytes from 10.0.0.1: icmp_seq=7 ttl=64 time=0.953 ms
+64 bytes from 10.0.0.1: icmp_seq=8 ttl=64 time=1.01 ms
+64 bytes from 10.0.0.1: icmp_seq=9 ttl=64 time=0.960 ms
+64 bytes from 10.0.0.1: icmp_seq=10 ttl=64 time=0.583 ms
+64 bytes from 10.0.0.1: icmp_seq=11 ttl=64 time=0.558 ms
+
+3 og 4:
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=1 ttl=128 time=16.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=2 ttl=128 time=19.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=3 ttl=128 time=14.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=4 ttl=128 time=13.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=5 ttl=128 time=12.2 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=6 ttl=128 time=12.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=7 ttl=128 time=13.3 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=8 ttl=128 time=12.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=9 ttl=128 time=12.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=10 ttl=128 time=12.3 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=11 ttl=128 time=43.7 ms
+
+5:
+
+
+GET / 
+
+GET / HTTP/1.0
+
+GET / HTTP/1.1
+Host:10.0.0.1
