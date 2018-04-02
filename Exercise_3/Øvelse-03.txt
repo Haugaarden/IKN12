@@ -36,3 +36,21 @@ Closed by foreign host med det samme
 GET / HTTP/1.1
 Host:10.0.0.1	*2 gange enter*
 Closed by foreign host efter noget tid (omkring 5 sekunder). Dermed kan der sendes flere requests.
+
+12:
+Der er først handshaking mellem H1 og H2.
+Derefter:
+H2: GET / HTTP1.1
+H1: HTTP/1.1 200 OK	Indeholder response to GET kaldet. I dette er der 247 bytes i gzip format, som bliver til 411 bytes efter udpakning. Disse bytes er html teksten fra siden, og denne indeholder source navnet til alle tre billeder.
+H2: Acknowledger at svaret er modtaget, og ser derefter at der er tre billeder
+H2: GET /Hotdog1.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+H2: GET /Hotdog2.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+H2: GET /Hotdog3.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+Derefter sendes billederne over mange packets.
+
+
+Cached:
+Hvis billederne allerede er blevet overført til H2 en gang, og er i cache, sender H1 i stedet "Not modified" så billederne ikke sendes igen. Dette sker for hvert billede.
