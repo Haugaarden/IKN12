@@ -27,7 +27,7 @@
 5:
 
 10 og 11:
-GET / 
+GET / HTTP
 Closed by foreign host med det samme
 
 GET / HTTP/1.0	*2 gange enter*
