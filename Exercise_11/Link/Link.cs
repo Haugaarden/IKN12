@@ -89,7 +89,7 @@ namespace Linklaget
 					SLIP.Append("BD");
 				} else
 				{
-					SLIP.Append(buf[i]);
+					SLIP.Append((char)buf[i]);
 				}
 			}
 			SLIP.Append('A');
