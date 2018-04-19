@@ -1,0 +1,56 @@
+1 og 2: 10.0.0.2 til 10.0.0.1:
+64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.340 ms
+64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=1.03 ms
+64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=1.00 ms
+64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.950 ms
+64 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.943 ms
+64 bytes from 10.0.0.1: icmp_seq=6 ttl=64 time=0.586 ms
+64 bytes from 10.0.0.1: icmp_seq=7 ttl=64 time=0.953 ms
+64 bytes from 10.0.0.1: icmp_seq=8 ttl=64 time=1.01 ms
+64 bytes from 10.0.0.1: icmp_seq=9 ttl=64 time=0.960 ms
+64 bytes from 10.0.0.1: icmp_seq=10 ttl=64 time=0.583 ms
+64 bytes from 10.0.0.1: icmp_seq=11 ttl=64 time=0.558 ms
+
+3 og 4:
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=1 ttl=128 time=16.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=2 ttl=128 time=19.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=3 ttl=128 time=14.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=4 ttl=128 time=13.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=5 ttl=128 time=12.2 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=6 ttl=128 time=12.1 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=7 ttl=128 time=13.3 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=8 ttl=128 time=12.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=9 ttl=128 time=12.0 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=10 ttl=128 time=12.3 ms
+64 bytes from web-lb.pool.public.tv2net.dk (91.224.211.71): icmp_seq=11 ttl=128 time=43.7 ms
+
+5:
+
+10 og 11:
+GET / HTTP
+Closed by foreign host med det samme
+
+GET / HTTP/1.0	*2 gange enter*
+Closed by foreign host med det samme
+
+GET / HTTP/1.1
+Host:10.0.0.1	*2 gange enter*
+Closed by foreign host efter noget tid (omkring 5 sekunder). Dermed kan der sendes flere requests.
+
+12:
+Der er først handshaking mellem H1 og H2.
+Derefter:
+H2: GET / HTTP1.1
+H1: HTTP/1.1 200 OK	Indeholder response to GET kaldet. I dette er der 247 bytes i gzip format, som bliver til 411 bytes efter udpakning. Disse bytes er html teksten fra siden, og denne indeholder source navnet til alle tre billeder.
+H2: Acknowledger at svaret er modtaget, og ser derefter at der er tre billeder
+H2: GET /Hotdog1.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+H2: GET /Hotdog2.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+H2: GET /Hotdog3.jpg HTTP/1.1
+H1 og H2: ACK og SYN
+Derefter sendes billederne over mange packets.
+
+
+Cached:
+Hvis billederne allerede er blevet overført til H2 en gang, og er i cache, sender H1 i stedet "Not modified" så billederne ikke sendes igen. Dette sker for hvert billede.

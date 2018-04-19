@@ -17,16 +17,12 @@ namespace UDP
 			var listener = new UdpClient(PORT);
 			var RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, PORT);
 
-			//Byte[] receiveBytes = listener.Receive(ref RemoteIpEndPoint);
 
 			string returnData;
 			do
 			{
 				Byte[] receiveBytes = listener.Receive(ref RemoteIpEndPoint);
 				returnData = Encoding.ASCII.GetString(receiveBytes).ToLower();
-				Console.WriteLine(returnData);
-
-				Console.WriteLine(!returnData.Equals("u"));
 
 			} while(!returnData.Equals("u") && !returnData.Equals("l"));
 
@@ -51,17 +47,10 @@ namespace UDP
 
 		private string readFile(string fileName)
 		{
-			FileStream fs = File.OpenRead(fileName);	//Opens filestream
-
 			string fileText = System.IO.File.ReadAllText(fileName);
 
 			int fileSize = fileText.Length;
 
-			//var fileBuffer = new byte[Buffer];	//Buffer to contain parts of the file
-
-			//int fileSize = fs.Read(fileBuffer, 0, fileBuffer.Length);
-
-			Console.WriteLine(fileSize);
 
 			return fileText;
 		}
@@ -75,7 +64,9 @@ namespace UDP
 
 		public static void Main(string[] args)
 		{
-			new udp_server();
+			while(true) {
+				new udp_server();
+			}
 		}
 	}
 }

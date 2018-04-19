@@ -14,7 +14,6 @@ namespace UDP
 		{
 
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-			//var s = new UdpClient(PORT);
 			var broadcast = IPAddress.Parse(args[0]);
 
 			byte[] sendbuf = Encoding.ASCII.GetBytes(args[1]);
@@ -22,18 +21,21 @@ namespace UDP
 
 			s.SendTo(sendbuf, ep);
 
-			Console.WriteLine("Sent");
+			Console.WriteLine("Sent " + args[1]);
 
+			receiveData(s); 
+
+
+		}
+
+		private void receiveData(Socket s)
+		{
 			Byte[] receiveBytes = new byte[Buffer];
 			s.Receive(receiveBytes);
 			string returnData = Encoding.ASCII.GetString(receiveBytes).ToLower();
-			Console.WriteLine(returnData);
+			Console.WriteLine("Received " + returnData);
 		}
 
-		private void sendData(String fileName, long fileSize, NetworkStream io)
-		{
-
-		}
 
 		public static void Main(string[] args)
 		{
