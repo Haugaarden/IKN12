@@ -128,8 +128,7 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			link.receive(ref buf);
-			return 0;
+			return link.receive(ref buf);	//returns length of received byte array
 		}
 	}
 }

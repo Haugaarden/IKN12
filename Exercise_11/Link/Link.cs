@@ -117,6 +117,8 @@ namespace Linklaget
 			{
 				if(buffer[i] == DELIMITER)
 				{
+					//Do nothing. Delimeters are ignored
+
 				} else if(buffer[i] == 'B')
 				{
 					if(buffer[i + 1] == 'C')
