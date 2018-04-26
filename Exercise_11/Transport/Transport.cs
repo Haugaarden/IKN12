@@ -128,7 +128,7 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
+			link.receive(ref buf);
 			return 0;
 		}
 	}

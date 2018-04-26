@@ -14,6 +14,8 @@ namespace Application
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_CLIENT";
 
+		Transport transport;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="file_client"/> class.
 		/// 
@@ -28,7 +30,8 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
-	    	// TO DO Your own code
+			transport = new Transport(BUFSIZE, APP);
+			receiveFile("hej", transport);
 	    }
 
 		/// <summary>
@@ -42,7 +45,9 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			// TO DO Your own code
+			var received = new byte[BUFSIZE];
+			transport.receive(ref received);
+			Console.WriteLine(Encoding.ASCII.GetString(received));
 		}
 
 		/// <summary>

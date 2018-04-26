@@ -30,19 +30,17 @@ namespace Linklaget
 		/// </summary>
 		public Link (int BUFSIZE, string APP)
 		{
-			string[] ports = SerialPort.GetPortNames();
-			foreach(string port in ports)
-			{
-				Console.WriteLine(port);
-			}
+//			string[] ports = SerialPort.GetPortNames();
+//			foreach(string port in ports)
+//			{
+//				Console.WriteLine(port);
+//			}
 
 			// Create a new SerialPort object with default settings.
 			#if DEBUG
 				if(APP.Equals("FILE_SERVER"))
 				{
 					serialPort = new SerialPort("/dev/tnt0",115200,Parity.None,8,StopBits.One);
-					//serialPort.DtrEnable = true; 	 	
-					//serialPort.RtsEnable = true;
 				}
 				else
 				{
@@ -77,7 +75,7 @@ namespace Linklaget
 	    	// implement SLIP
 			var SLIP = new StringBuilder(); 
 
-			SLIP.Append("A");
+			SLIP.Append((char)DELIMITER);
 
 			for(int i = 0; i<size; i++)
 			{
@@ -92,7 +90,7 @@ namespace Linklaget
 					SLIP.Append((char)buf[i]);
 				}
 			}
-			SLIP.Append('A');
+			SLIP.Append((char)DELIMITER);
 
 			//Send over serial
 			serialPort.Write(SLIP.ToString());
@@ -117,7 +115,7 @@ namespace Linklaget
 			
 			for(int i = 0; i<buffer.Length; i++)
 			{
-				if(buffer[i] == 'A')
+				if(buffer[i] == DELIMITER)
 				{
 				} else if(buffer[i] == 'B')
 				{
@@ -132,7 +130,7 @@ namespace Linklaget
 					}
 				} else
 				{
-					DeSLIP.Append(buffer[i]);
+					DeSLIP.Append((char)buffer[i]);
 				}
 			}
 
