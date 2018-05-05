@@ -23,6 +23,15 @@ namespace Transportlaget
     		return (~((sum & 0xFFFF)+(sum >> 16)))&0xFFFF;
 		}
 
+		/// <summary>
+		/// Compares calculated checksum with checksum from packet.
+		/// </summary>
+		/// <param name='buf'>
+		/// Buffer.
+		/// </param>
+		/// /// <param name='size'>
+		/// Size of buffer.
+		/// </param>
 		public bool checkChecksum(byte[] buf, int size)
 		{
 			byte[] buffer = new byte[size-2];
