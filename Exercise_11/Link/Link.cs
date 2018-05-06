@@ -28,7 +28,7 @@ namespace Linklaget
 		/// <summary>
 		/// Initializes a new instance of the <see cref="link"/> class.
 		/// </summary>
-		public Link (int BUFSIZE, string APP)
+		public Link(int BUFSIZE, string APP)
 		{
 //			string[] ports = SerialPort.GetPortNames();
 //			foreach(string port in ports)
@@ -38,27 +38,26 @@ namespace Linklaget
 
 			// Create a new SerialPort object with default settings.
 			#if DEBUG
-				if(APP.Equals("FILE_SERVER"))
-				{
-					serialPort = new SerialPort("/dev/tnt0",115200,Parity.None,8,StopBits.One);
-				}
-				else
-				{
-				serialPort = new SerialPort("/dev/tnt1",115200,Parity.None,8,StopBits.One);
-				}
+			if(APP.Equals("FILE_SERVER"))
+			{
+				serialPort = new SerialPort("/dev/tnt0", 115200, Parity.None, 8, StopBits.One);
+			} else
+			{
+				serialPort = new SerialPort("/dev/tnt1", 115200, Parity.None, 8, StopBits.One);
+			}
 			#else
 				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
 			#endif
 			if(!serialPort.IsOpen)
- 				serialPort.Open();
+				serialPort.Open();
 
-			buffer = new byte[(BUFSIZE*2)];
+			buffer = new byte[(BUFSIZE * 2)];
 
 			// Uncomment the next line to use timeout
 			serialPort.ReadTimeout = 500;
 
-			serialPort.DiscardInBuffer ();
-			serialPort.DiscardOutBuffer ();
+			serialPort.DiscardInBuffer();
+			serialPort.DiscardOutBuffer();
 		}
 
 		/// <summary>
@@ -70,14 +69,15 @@ namespace Linklaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public void send (byte[] buf, int size)
+		public void send(byte[] buf, int size)
 		{
-	    	// implement SLIP
+			Console.WriteLine("Slip size = " + size);
+			// implement SLIP
 			var SLIP = new StringBuilder(); 
 
 			SLIP.Append((char)DELIMITER);
 
-			for(int i = 0; i<size; i++)
+			for(int i = 0; i < size; i++)
 			{
 				if(buf[i] == 'A')
 				{
@@ -105,20 +105,26 @@ namespace Linklaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public int receive (ref byte[] buf)
+		public int receive(ref byte[] buf)
 		{
 			//Read from serial
 			serialPort.Read(buffer, 0, buffer.Length);
 
 			//Convert from SLIP to regular string
 			var DeSLIP = new StringBuilder(); 
-			
-			for(int i = 0; i<buffer.Length; i++)
+			int delimeterCount = 0;
+
+			for(int i = 0; i < buffer.Length; i++)
 			{
 				if(buffer[i] == DELIMITER)
 				{
 					//Do nothing. Delimeters are ignored
+					delimeterCount++;
 
+				} 
+				if(delimeterCount >= 2)
+				{
+					break;
 				} else if(buffer[i] == 'B')
 				{
 					if(buffer[i + 1] == 'C')
@@ -137,8 +143,8 @@ namespace Linklaget
 			}
 
 			buf = Encoding.ASCII.GetBytes(DeSLIP.ToString());
-
-			return buf.Length;
+			Console.WriteLine("Deslip size " + (DeSLIP.Length - 1));
+			return DeSLIP.Length-1;
 		}
 	}
 }

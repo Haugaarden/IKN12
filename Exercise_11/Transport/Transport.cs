@@ -70,15 +70,17 @@ namespace Transportlaget
 		/// </returns>
 		private byte receiveAck()
 		{
+			Console.WriteLine("receiveAck()");
 			recvSize = link.receive(ref buffer);
+			Console.WriteLine(recvSize + " " + (int)TransSize.ACKSIZE);
 			dataReceived = true;
 
 			if(recvSize == (int)TransSize.ACKSIZE)
 			{
 				dataReceived = false;
 				if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
-				    buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
-				    buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
+				   buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
+				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
 					seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];
 				} else
@@ -117,35 +119,46 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			try
+			//reset buffer
+			for(int i = 0; i < buffer.Length; i++)
 			{
+				buffer[i] = 0;
+			}
+
 			do
 			{
 				//If 5 errors in a row. Receiver application does not want to receive data. Abort
-				if(errorCount++ >= 5)	//increment erroCount after check
+				if(errorCount++ >= 5)	//increment errorCount after check
 				{
 					return;
+					//throw 
 				}
 
 				buffer[2] = seqNo;	//The current sequence number
-				buffer[3] = TransType.DATA;	//Data is being sent
-				Array.Copy(buf, 0, buffer, 4, size);	//Copy from buf starting at [0] to buffer starting at [4]
-				checksum.calcChecksum();
+				buffer[3] = (byte)(int)TransType.DATA;	//Data is being sent
+				Array.Copy(buf, 0, buffer, (int)TransSize.ACKSIZE, size);	//Copy from buf starting at [0] to buffer starting at [4]
+				checksum.calcChecksum(ref buffer, buffer.Length);
 //				if(++errorCount == 3) // Simulate noise
 //				{
 //					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
 //					Console.WriteLine("Noise! - byte #1 is spoiled in the third transmission");
 //				}				
 
-				link.send(buffer, size + 4);	//Send the data
+				link.send(buffer, size + (int)TransSize.ACKSIZE);	//Send the data
 
-			} while(!receiveAck() != seqNo);	//keep trying as long as ackSeqNo does not match dataSeqNo
-			} catch(TimeoutException)
-			{
-				//maybe do nothing
-				Console.WriteLine("Read TimeoutException. ErrorCount: " + errorCount);
-			}
+				old_seqNo = seqNo;
+				try
+				{
+					old_seqNo = receiveAck();	//Get acknowledged seqNo
+				} catch(TimeoutException)
+				{
+					//maybe do nothing
+					Console.WriteLine("Read TimeoutException. ErrorCount: " + errorCount);
+				}
 
+			} while(seqNo != old_seqNo);	//keep trying as long as dataSeqNo does not match ackSeqNo
+
+			seqNo = (byte)((seqNo + 1) % 2);	//Change seqNo
 			old_seqNo = DEFAULT_SEQNO;	//Make sure seqNo does not match a useable seqNo, in case the direction is changed
 			errorCount = 0;	//Reset errorCount
 
@@ -193,24 +206,38 @@ namespace Transportlaget
 		{
 			while(true)
 			{
+				//reset buffer
+				for(int i = 0; i < buffer.Length; i++)
+				{
+					buffer[i] = 0;
+				}
+
 				// receive data
 				while(recvSize == 0)
 				{
-					recvSize = link.receive(ref buffer);	//returns length of received byte array
+					try
+					{
+						recvSize = link.receive(ref buffer);	//returns length of received byte array
+					} catch(Exception e)
+					{
+						//Maybe do nothing
+					}
 				}
 
-				recvSize = 0;
+				//recvSize = 0;
 
 				//check for bit errors
-				if(checksum.checkChecksum(buffer, buffer.Length))
+				if(checksum.checkChecksum(buffer, recvSize))
 				{
-					sendAck(true);
-					buf = buffer;
-					return buffer.Length;
+					sendAck(true);	//Data had no errors
+					Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, buf.Length - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
+					Console.WriteLine(buffer.Length + " " + buf.Length);
+					return buf.Length;
 				}
+				Console.WriteLine(buffer.Length);
 
-				sendAck(false);
-
+				recvSize = 0;
+				sendAck(false);	//Data had errors. Resend pls
 
 				return 0;
 			}
