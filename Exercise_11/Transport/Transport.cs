@@ -72,7 +72,7 @@ namespace Transportlaget
 		{
 			Console.WriteLine("receiveAck()");
 			recvSize = link.receive(ref buffer);
-			Console.WriteLine(recvSize + " " + (int)TransSize.ACKSIZE);
+			Console.WriteLine("recvSize: " + recvSize + ", ACKSIZE: " + (int)TransSize.ACKSIZE);
 			dataReceived = true;
 
 			if(recvSize == (int)TransSize.ACKSIZE)
@@ -230,7 +230,7 @@ namespace Transportlaget
 				if(checksum.checkChecksum(buffer, recvSize))
 				{
 					sendAck(true);	//Data had no errors
-					Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, buf.Length - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
+					Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, recvSize - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
 					Console.WriteLine(buffer.Length + " " + buf.Length);
 					return buf.Length;
 				}

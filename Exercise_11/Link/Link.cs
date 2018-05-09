@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.IO.Ports;
+using System.Collections.Generic;
 
 /// <summary>
 /// Link.
@@ -71,29 +72,40 @@ namespace Linklaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
+			var SLIP = new List<byte>();
 			Console.WriteLine("Slip size = " + size);
 			// implement SLIP
-			var SLIP = new StringBuilder(); 
+			//var SLIP = new StringBuilder(); 
 
-			SLIP.Append((char)DELIMITER);
+			SLIP.Add(DELIMITER);
 
 			for(int i = 0; i < size; i++)
 			{
+				Console.WriteLine(buf[i]);
 				if(buf[i] == 'A')
 				{
-					SLIP.Append("BC");
+					//SLIP.Append(Encoding.ASCII.GetBytes("BC"));
+					SLIP.Add((byte)'B');
+					SLIP.Add((byte)'C');
 				} else if(buf[i] == 'B')
 				{
-					SLIP.Append("BD");
+					SLIP.Add((byte)'B');
+					SLIP.Add((byte)'D');
 				} else
 				{
-					SLIP.Append((char)buf[i]);
+					SLIP.Add(buf[i]);
 				}
 			}
-			SLIP.Append((char)DELIMITER);
+			SLIP.Add(DELIMITER);
+
+			Console.WriteLine("slipChar:");
+			foreach(var slipChar in SLIP)
+			{
+				Console.WriteLine(slipChar);
+			}
 
 			//Send over serial
-			serialPort.Write(SLIP.ToString());
+			serialPort.Write(SLIP.ToArray(), 0, SLIP.Count);
 		}
 
 		/// <summary>
@@ -111,11 +123,12 @@ namespace Linklaget
 			serialPort.Read(buffer, 0, buffer.Length);
 
 			//Convert from SLIP to regular string
-			var DeSLIP = new StringBuilder(); 
+			var DeSLIP = new List<byte>(); 
 			int delimeterCount = 0;
 
 			for(int i = 0; i < buffer.Length; i++)
 			{
+				Console.WriteLine(buffer[i]);
 				if(buffer[i] == DELIMITER)
 				{
 					//Do nothing. Delimeters are ignored
@@ -125,26 +138,35 @@ namespace Linklaget
 				if(delimeterCount >= 2)
 				{
 					break;
-				} else if(buffer[i] == 'B')
+				} else if (buffer[i] == DELIMITER)
+				{
+					//do nothing
+				}else if(buffer[i] == 'B')
 				{
 					if(buffer[i + 1] == 'C')
 					{
-						DeSLIP.Append('A');
+						DeSLIP.Add((byte)'A');
 						i++;
 					} else if(buffer[i + 1] == 'D')
 					{
-						DeSLIP.Append('B');
+						DeSLIP.Add((byte)'B');
 						i++;
 					}
 				} else
 				{
-					DeSLIP.Append((char)buffer[i]);
+					DeSLIP.Add((byte)buffer[i]);
 				}
 			}
 
-			buf = Encoding.ASCII.GetBytes(DeSLIP.ToString());
-			Console.WriteLine("Deslip size " + (DeSLIP.Length - 1));
-			return DeSLIP.Length-1;
+			Console.WriteLine("deslipByte:");
+			foreach(var deslipByte in DeSLIP)
+			{
+				Console.WriteLine(deslipByte);
+			}
+
+			buf = DeSLIP.ToArray();
+			Console.WriteLine("Deslip size " + (DeSLIP.Count));
+			return DeSLIP.Count;
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace Transportlaget
 		/// </param>
 		public bool checkChecksum(byte[] buf, int size)
 		{
-			Console.WriteLine("checkChecksum");
+			Console.WriteLine("checkChecksum " + buf[2] + " " + buf[3]);
 			byte[] buffer = new byte[size-2];
 
 			Array.Copy(buf, (int)TransSize.CHKSUMSIZE, buffer, 0, buffer.Length);
@@ -44,7 +44,7 @@ namespace Transportlaget
 
 		public void calcChecksum (ref byte[] buf, int size)
 		{
-			Console.WriteLine("calcChecksum");
+			Console.WriteLine("calcChecksum " + buf[2] + " " + buf[3]);
 			byte[] buffer = new byte[size-2];
 			long sum = 0;
 
