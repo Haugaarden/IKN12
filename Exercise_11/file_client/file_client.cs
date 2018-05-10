@@ -48,6 +48,10 @@ namespace Application
 			var received = new byte[BUFSIZE];
 			transport.receive(ref received);
 			Console.WriteLine(Encoding.ASCII.GetString(received));
+			transport.receive(ref received);
+			Console.WriteLine(Encoding.ASCII.GetString(received));
+			transport.receive(ref received);
+			Console.WriteLine(Encoding.ASCII.GetString(received));
 		}
 
 		/// <summary>

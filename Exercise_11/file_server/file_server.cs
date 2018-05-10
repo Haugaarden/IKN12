@@ -42,6 +42,8 @@ namespace Application
 			string sending = "AXBY";
 			var bArray = Encoding.ASCII.GetBytes(sending);
 			transport.send(bArray, bArray.Length);
+			transport.send(bArray, bArray.Length);
+			transport.send(bArray, bArray.Length);
 		}
 
 		/// <summary>

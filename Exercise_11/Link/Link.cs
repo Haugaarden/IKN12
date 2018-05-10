@@ -31,12 +31,6 @@ namespace Linklaget
 		/// </summary>
 		public Link(int BUFSIZE, string APP)
 		{
-//			string[] ports = SerialPort.GetPortNames();
-//			foreach(string port in ports)
-//			{
-//				Console.WriteLine(port);
-//			}
-
 			// Create a new SerialPort object with default settings.
 			#if DEBUG
 			if(APP.Equals("FILE_SERVER"))
@@ -98,12 +92,6 @@ namespace Linklaget
 			}
 			SLIP.Add(DELIMITER);
 
-			Console.WriteLine("slipChar:");
-			foreach(var slipChar in SLIP)
-			{
-				Console.WriteLine(slipChar);
-			}
-
 			//Send over serial
 			serialPort.Write(SLIP.ToArray(), 0, SLIP.Count);
 		}
@@ -158,13 +146,8 @@ namespace Linklaget
 				}
 			}
 
-			Console.WriteLine("deslipByte:");
-			foreach(var deslipByte in DeSLIP)
-			{
-				Console.WriteLine(deslipByte);
-			}
-
-			buf = DeSLIP.ToArray();
+			//buf = DeSLIP.ToArray();
+			Array.Copy(DeSLIP.ToArray(), buf, DeSLIP.Count);
 			Console.WriteLine("Deslip size " + (DeSLIP.Count));
 			return DeSLIP.Count;
 		}

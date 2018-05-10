@@ -36,6 +36,10 @@ namespace Transportlaget
 		/// </summary>
 		private int errorCount;
 		/// <summary>
+		/// The transmit count.
+		/// </summary>
+		private int transmitCount;
+		/// <summary>
 		/// The DEFAULT_SEQNO.
 		/// </summary>
 		private const int DEFAULT_SEQNO = 2;
@@ -59,6 +63,7 @@ namespace Transportlaget
 			seqNo = 0;
 			old_seqNo = DEFAULT_SEQNO;
 			errorCount = 0;
+			transmitCount = 0;
 			dataReceived = false;
 		}
 
@@ -72,22 +77,24 @@ namespace Transportlaget
 		{
 			Console.WriteLine("receiveAck()");
 			recvSize = link.receive(ref buffer);
-			Console.WriteLine("recvSize: " + recvSize + ", ACKSIZE: " + (int)TransSize.ACKSIZE);
 			dataReceived = true;
 
 			if(recvSize == (int)TransSize.ACKSIZE)
 			{
+				Console.WriteLine("Acksize correct");
 				dataReceived = false;
 				if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
 				   buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
 				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
-					seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];
+					seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
 				} else
 				{
-					seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+					seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);	//increments seqNo if no checkSum error
 				}
 			}
+
+			Console.WriteLine(seqNo.ToString());
  
 			return seqNo;
 		}
@@ -100,11 +107,20 @@ namespace Transportlaget
 		/// </param>
 		private void sendAck(bool ackType)
 		{
+			Console.WriteLine("Sending Ack: " + ackType);
 			byte[] ackBuf = new byte[(int)TransSize.ACKSIZE];
 			ackBuf[(int)TransCHKSUM.SEQNO] = (byte)
 				(ackType ? (byte)buffer[(int)TransCHKSUM.SEQNO] : (byte)(buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
+
+//			if(++transmitCount == 2) // Simulate noise
+//			{
+//				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+//				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
+//				transmitCount = 0;
+//			}
+
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
@@ -119,14 +135,15 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			//reset buffer
-			for(int i = 0; i < buffer.Length; i++)
-			{
-				buffer[i] = 0;
-			}
 
 			do
 			{
+				//reset buffer
+				for(int i = 0; i < buffer.Length; i++)
+				{
+					buffer[i] = 0;
+				}
+
 				//If 5 errors in a row. Receiver application does not want to receive data. Abort
 				if(errorCount++ >= 5)	//increment errorCount after check
 				{
@@ -138,22 +155,31 @@ namespace Transportlaget
 				buffer[3] = (byte)(int)TransType.DATA;	//Data is being sent
 				Array.Copy(buf, 0, buffer, (int)TransSize.ACKSIZE, size);	//Copy from buf starting at [0] to buffer starting at [4]
 				checksum.calcChecksum(ref buffer, buffer.Length);
-//				if(++errorCount == 3) // Simulate noise
-//				{
-//					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-//					Console.WriteLine("Noise! - byte #1 is spoiled in the third transmission");
-//				}				
+
+				if(++transmitCount == 3) // Simulate noise
+				{
+					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+					Console.WriteLine("Noise! - byte #1 is spoiled in the third transmission");
+					transmitCount = 0;
+				}				
 
 				link.send(buffer, size + (int)TransSize.ACKSIZE);	//Send the data
 
 				old_seqNo = seqNo;
 				try
 				{
-					old_seqNo = receiveAck();	//Get acknowledged seqNo
+					receiveAck();	//Get acknowledged seqNo
 				} catch(TimeoutException)
 				{
 					//maybe do nothing
 					Console.WriteLine("Read TimeoutException. ErrorCount: " + errorCount);
+				}
+
+				Console.WriteLine("old_seq: " + old_seqNo + " seqNo: " + seqNo);
+
+				if(seqNo != old_seqNo)
+				{
+					Console.WriteLine("Ack error");
 				}
 
 			} while(seqNo != old_seqNo);	//keep trying as long as dataSeqNo does not match ackSeqNo
@@ -163,37 +189,6 @@ namespace Transportlaget
 			errorCount = 0;	//Reset errorCount
 
 			Console.WriteLine("Done Sending");
-
-//			while(true)
-//			{
-//				//If 5 errors in a row. Receiver application does not want to receive data. Abort
-//				if(errorCount >= 5)
-//				{
-//					return;
-//				}
-//					
-//				buffer = buf;
-//
-//				checksum.calcChecksum(ref buffer, size);	//insert checksum
-//
-//				link.send(buffer, size);	//Sends data
-//
-//				seqNo = receiveAck();	//check for acknowledge
-//
-//				// if not acknowledged
-//				if(old_seqNo == seqNo)
-//				{
-//					errorCount++;
-//					//send(buffer, size);	//Retry send
-//				} else
-//				{
-//					//if acknowledged
-//					errorCount = 0;
-//					old_seqNo = seqNo;
-//					return;
-//				}
-//				
-//			}
 		}
 
 		/// <summary>
@@ -224,8 +219,6 @@ namespace Transportlaget
 					}
 				}
 
-				//recvSize = 0;
-
 				//check for bit errors
 				if(checksum.checkChecksum(buffer, recvSize))
 				{
@@ -234,12 +227,12 @@ namespace Transportlaget
 					Console.WriteLine(buffer.Length + " " + buf.Length);
 					return buf.Length;
 				}
-				Console.WriteLine(buffer.Length);
+				Console.WriteLine("Error. sendAck(false) called");
 
 				recvSize = 0;
 				sendAck(false);	//Data had errors. Resend pls
 
-				return 0;
+				//return 0;
 			}
 		}
 	}
