@@ -85,11 +85,12 @@ namespace Transportlaget
 				Console.WriteLine("Acksize correct");
 				dataReceived = false;
 				if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
-				   buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
+				   //buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
 				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
-					ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
+					//ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
 					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2); // increment if error
+					ack_seqNo = (byte)((ack_seqNo + 1) % 2);
 				} else
 				{
 					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);	//increments seqNo if no checkSum error
@@ -226,17 +227,28 @@ namespace Transportlaget
 				if(checksum.checkChecksum(buffer, recvSize))
 				{
 					Console.WriteLine("No bit errors");
-					sendAck(true);	//Data had no errors
-					Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, recvSize - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
-					Console.WriteLine(buffer.Length + " " + buf.Length);
+
+					Console.WriteLine("bufferSeqNo: " + buffer[(int)TransCHKSUM.SEQNO].ToString() + "ack_seqNo: " + ack_seqNo.ToString()); 
+
+					if(buffer[(int)TransCHKSUM.SEQNO] == ack_seqNo)
+					{
+						Console.WriteLine("Ignoring identical data");
+						sendAck(true);
+						recvSize = 0;
+					} else
+					{
+						sendAck(true);	//Data had no errors
+						Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, recvSize - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
+						Console.WriteLine(buffer.Length + " " + buf.Length);
+						recvSize = 0;
+						ack_seqNo = buffer[(int)TransCHKSUM.SEQNO];
+						return buf.Length;
+					}
+				} else
+				{
 					recvSize = 0;
-					return buf.Length;
+					sendAck(false);	//Data had errors. Resend pls
 				}
-
-				recvSize = 0;
-				sendAck(false);	//Data had errors. Resend pls
-
-				//return 0;
 			}
 		}
 	}
