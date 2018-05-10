@@ -30,7 +30,7 @@ namespace Transportlaget
 		/// <summary>
 		/// The old_seq no.
 		/// </summary>
-		private byte old_seqNo;
+		private byte ack_seqNo;
 		/// <summary>
 		/// The error count.
 		/// </summary>
@@ -61,7 +61,7 @@ namespace Transportlaget
 			checksum = new Checksum();
 			buffer = new byte[BUFSIZE + (int)TransSize.ACKSIZE];
 			seqNo = 0;
-			old_seqNo = DEFAULT_SEQNO;
+			ack_seqNo = DEFAULT_SEQNO;
 			errorCount = 0;
 			transmitCount = 0;
 			dataReceived = false;
@@ -75,6 +75,7 @@ namespace Transportlaget
 		/// </returns>
 		private byte receiveAck()
 		{
+			//byte seqNoL = new byte();
 			Console.WriteLine("receiveAck()");
 			recvSize = link.receive(ref buffer);
 			dataReceived = true;
@@ -87,16 +88,18 @@ namespace Transportlaget
 				   buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
 				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
-					seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
+					ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
+					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2); // increment if error
 				} else
 				{
-					seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);	//increments seqNo if no checkSum error
+					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);	//increments seqNo if no checkSum error
+					ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO]; // no increment if no error
 				}
 			}
 
-			Console.WriteLine(seqNo.ToString());
+			Console.WriteLine("ack_seqNo" + ack_seqNo.ToString());
  
-			return seqNo;
+			return ack_seqNo;
 		}
 
 		/// <summary>
@@ -114,12 +117,12 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-//			if(++transmitCount == 2) // Simulate noise
-//			{
-//				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-//				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
-//				transmitCount = 0;
-//			}
+			if(++transmitCount == 2) // Simulate noise
+			{
+				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
+				transmitCount = 0;
+			}
 
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
@@ -165,7 +168,7 @@ namespace Transportlaget
 
 				link.send(buffer, size + (int)TransSize.ACKSIZE);	//Send the data
 
-				old_seqNo = seqNo;
+				ack_seqNo = seqNo;
 				try
 				{
 					receiveAck();	//Get acknowledged seqNo
@@ -175,17 +178,17 @@ namespace Transportlaget
 					Console.WriteLine("Read TimeoutException. ErrorCount: " + errorCount);
 				}
 
-				Console.WriteLine("old_seq: " + old_seqNo + " seqNo: " + seqNo);
+				Console.WriteLine("ack_seqNo: " + ack_seqNo + " seqNo: " + seqNo);
 
-				if(seqNo != old_seqNo)
+				if(seqNo != ack_seqNo)
 				{
 					Console.WriteLine("Ack error");
 				}
 
-			} while(seqNo != old_seqNo);	//keep trying as long as dataSeqNo does not match ackSeqNo
+			} while(seqNo != ack_seqNo);	//keep trying as long as dataSeqNo does not match ackSeqNo
 
 			seqNo = (byte)((seqNo + 1) % 2);	//Change seqNo
-			old_seqNo = DEFAULT_SEQNO;	//Make sure seqNo does not match a useable seqNo, in case the direction is changed
+			ack_seqNo = DEFAULT_SEQNO;	//Make sure seqNo does not match a useable seqNo, in case the direction is changed
 			errorCount = 0;	//Reset errorCount
 
 			Console.WriteLine("Done Sending");
@@ -213,7 +216,7 @@ namespace Transportlaget
 					try
 					{
 						recvSize = link.receive(ref buffer);	//returns length of received byte array
-					} catch(Exception e)
+					} catch(Exception)
 					{
 						//Maybe do nothing
 					}
@@ -222,12 +225,13 @@ namespace Transportlaget
 				//check for bit errors
 				if(checksum.checkChecksum(buffer, recvSize))
 				{
+					Console.WriteLine("No bit errors");
 					sendAck(true);	//Data had no errors
 					Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, recvSize - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
 					Console.WriteLine(buffer.Length + " " + buf.Length);
+					recvSize = 0;
 					return buf.Length;
 				}
-				Console.WriteLine("Error. sendAck(false) called");
 
 				recvSize = 0;
 				sendAck(false);	//Data had errors. Resend pls
