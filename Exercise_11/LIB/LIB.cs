@@ -36,9 +36,16 @@ namespace Library
 		/// </param>
 		public static long check_File_Exists (String fileName)
 		{
-			if (File.Exists (fileName))
+			//string fileName = "/root/ServerData/Hotdog.jpg.mp4";
+			Console.WriteLine("fileName in check: " + fileName);
+			Console.WriteLine(fileName.Length);
+			if(File.Exists(fileName))
+			{
+				Console.WriteLine("File Exists: " + (new FileInfo(fileName)).Length);
 				return (new FileInfo(fileName)).Length;
+			}
 
+			Console.WriteLine("File doesn't exist");
 			return 0;
 		}
 	}

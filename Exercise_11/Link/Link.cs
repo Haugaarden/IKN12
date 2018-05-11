@@ -66,6 +66,8 @@ namespace Linklaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
+			//serialPort.DiscardInBuffer();
+
 			var SLIP = new List<byte>();
 			Console.WriteLine("Slip size = " + size);
 			// implement SLIP
@@ -93,7 +95,14 @@ namespace Linklaget
 			SLIP.Add(DELIMITER);
 
 			//Send over serial
-			serialPort.Write(SLIP.ToArray(), 0, SLIP.Count);
+			try 
+			{
+				serialPort.Write(SLIP.ToArray(), 0, SLIP.Count);
+			}
+			catch(Exception)
+			{
+				Console.WriteLine("Write timeout exception");
+			}
 		}
 
 		/// <summary>
@@ -107,6 +116,8 @@ namespace Linklaget
 		/// </param>
 		public int receive(ref byte[] buf)
 		{
+			//serialPort.DiscardOutBuffer();
+
 			//Read from serial
 			serialPort.Read(buffer, 0, buffer.Length);
 

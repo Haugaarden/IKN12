@@ -31,7 +31,11 @@ namespace Application
 	    private file_client(String[] args)
 	    {
 			transport = new Transport(BUFSIZE, APP);
-			receiveFile("hej", transport);
+
+			string filename = args[0];
+
+			Console.WriteLine("Client Started");
+			receiveFile (filename, transport);
 	    }
 
 		/// <summary>
@@ -45,13 +49,55 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			var received = new byte[BUFSIZE];
-			transport.receive(ref received);
-			Console.WriteLine(Encoding.ASCII.GetString(received));
-			transport.receive(ref received);
-			Console.WriteLine(Encoding.ASCII.GetString(received));
-			transport.receive(ref received);
-			Console.WriteLine(Encoding.ASCII.GetString(received));
+			var receivedData = new byte[BUFSIZE];
+//			transport.receive(ref received);
+//			Console.WriteLine(Encoding.ASCII.GetString(received));
+//			transport.receive(ref received);
+//			Console.WriteLine(Encoding.ASCII.GetString(received));
+//			transport.receive(ref received);
+//			Console.WriteLine(Encoding.ASCII.GetString(received));
+
+			//If file does not exist on the server, the user can input another filename. Won't continue untill a correct name is input
+			long fileSize = 0;
+			do 
+			{
+				transport.send(Encoding.ASCII.GetBytes(fileName), fileName.Length);	//Sends filename to server
+
+
+				Console.WriteLine("Receiving filesize");
+				transport.receive(ref receivedData);	//Reads filesize from server
+				//fileSize = BitConverter.ToInt64(receivedData, 0);
+				//fileSize = (long)Encoding.ASCII.GetString(receivedData);
+				fileSize = Convert.ToInt64(Encoding.ASCII.GetString(receivedData));
+				Console.WriteLine("Filesize: " + fileSize);
+
+				//If file does not exist, get new filename
+				if(fileSize == 0)
+				{
+					Console.WriteLine("File does not exist, write filename:");
+					fileName = Console.ReadLine(); 
+				}
+
+			} while(fileSize == 0);
+
+			string dataDir = "/root/ExFiles/SerialTransmission/";	//filepath to save file to
+			Directory.CreateDirectory(dataDir);	//Create directory if it does not exist
+			FileStream fileStream = new FileStream (dataDir + fileName, FileMode.Create, FileAccess.Write);	//Creates file and return filestream
+			var fileBuffer = new byte [BUFSIZE];	//Buffer for holding filedata packets
+
+			Console.WriteLine("Reading...");
+
+			int bytesRead = 0;
+			int totalBytesRead = 0;
+			while(totalBytesRead < fileSize)
+			{
+				bytesRead = transport.receive(ref fileBuffer);
+				fileStream.Write(fileBuffer, 0, bytesRead);
+				totalBytesRead += bytesRead;
+			}
+
+			Console.WriteLine("Done reading");
+			fileStream.Close();
 		}
 
 		/// <summary>
@@ -62,7 +108,16 @@ namespace Application
 		/// </param>
 		public static void Main (string[] args)
 		{
-			new file_client(args);
+			//Checks the number of arguments. Will terminate if there's less than 2 arguments
+			if(args.Length >= 1)
+			{
+				Console.WriteLine("Client starts...");
+				new file_client(args);
+			} else
+			{
+				Console.WriteLine("This program needs 1 argument. filename");
+				Console.WriteLine("Terminating");
+			}
 		}
 	}
 }

@@ -118,7 +118,7 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-			if(++transmitCount == 2) // Simulate noise
+			if(++transmitCount == 20) // Simulate noise
 			{
 				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
 				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
@@ -205,6 +205,7 @@ namespace Transportlaget
 		{
 			while(true)
 			{
+				recvSize = 0;
 				//reset buffer
 				for(int i = 0; i < buffer.Length; i++)
 				{
@@ -219,7 +220,7 @@ namespace Transportlaget
 						recvSize = link.receive(ref buffer);	//returns length of received byte array
 					} catch(Exception)
 					{
-						//Maybe do nothing
+						Console.WriteLine("receive timeout");
 					}
 				}
 
@@ -234,19 +235,20 @@ namespace Transportlaget
 					{
 						Console.WriteLine("Ignoring identical data");
 						sendAck(true);
-						recvSize = 0;
+						//recvSize = 0;
 					} else
 					{
 						sendAck(true);	//Data had no errors
 						Array.Copy(buffer, (int)TransSize.ACKSIZE, buf, 0, recvSize - (int)TransSize.ACKSIZE);	//Copy from buffer starting at [4] to buf starting at [0]
 						Console.WriteLine(buffer.Length + " " + buf.Length);
-						recvSize = 0;
+						//recvSize = 0;
 						ack_seqNo = buffer[(int)TransCHKSUM.SEQNO];
-						return buf.Length;
+						//return buf.Length;
+						return recvSize - 4;
 					}
 				} else
 				{
-					recvSize = 0;
+					//recvSize = 0;
 					sendAck(false);	//Data had errors. Resend pls
 				}
 			}

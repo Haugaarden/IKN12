@@ -22,7 +22,33 @@ namespace Application
 		private file_server ()
 		{
 			transport = new Transport(BUFSIZE, APP);
-			sendFile("hej", 12, transport);
+
+			String dataDir = "/root/ServerData/";
+			var receivedData = new byte[BUFSIZE];
+
+			Console.WriteLine("Server started");
+
+			String fileName;
+			long fileSize;
+			int receivedSize;
+			do
+			{
+				Console.WriteLine("Reading filename");
+				receivedSize = transport.receive(ref receivedData);
+				Console.WriteLine("ReceivedSize: " + receivedSize);
+				fileName = Encoding.ASCII.GetString(receivedData, 0, receivedSize);
+				Console.WriteLine("Filename: " + fileName);
+				fileSize = LIB.check_File_Exists(dataDir + fileName);
+				Console.WriteLine("Filepath: " + dataDir + fileName);
+				Console.WriteLine("Filesize: " + fileSize);
+
+				transport.send(Encoding.ASCII.GetBytes(fileSize.ToString()), fileSize.ToString().Length);
+			} while (fileSize == 0);
+
+			sendFile(dataDir + fileName, fileSize, transport);
+
+			//Cleaning
+			Console.WriteLine("Exit");
 		}
 
 		/// <summary>
@@ -39,11 +65,27 @@ namespace Application
 		/// </param>
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
-			string sending = "AXBY";
-			var bArray = Encoding.ASCII.GetBytes(sending);
-			transport.send(bArray, bArray.Length);
-			transport.send(bArray, bArray.Length);
-			transport.send(bArray, bArray.Length);
+//			string sending = "AXBY";
+//			var bArray = Encoding.ASCII.GetBytes(sending);
+//			transport.send(bArray, bArray.Length);
+//			transport.send(bArray, bArray.Length);
+//			transport.send(bArray, bArray.Length);
+
+			Stream fileStream = File.OpenRead(fileName);	//Opens filestream
+
+			var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
+
+			int bytesToSend = 0;
+
+			while((bytesToSend = fileStream.Read(fileBuffer, 0, fileBuffer.Length)) > 0) //I exist to keep sending bytes until I only got 0 bytes to send left 
+			{
+				transport.send(fileBuffer, bytesToSend); //I must send that byte
+
+				Console.WriteLine("Sent " + bytesToSend + " bytes");
+
+			}
+
+			Console.WriteLine("Done sending");
 		}
 
 		/// <summary>
@@ -54,7 +96,11 @@ namespace Application
 		/// </param>
 		public static void Main (string[] args)
 		{
-			new file_server();
+			Console.WriteLine("Server starts...");
+			while(true)
+			{
+				new file_server();
+			}
 		}
 	}
 }
