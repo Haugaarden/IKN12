@@ -66,7 +66,8 @@ namespace Linklaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			//serialPort.DiscardInBuffer();
+//			serialPort.DiscardInBuffer();
+//			serialPort.DiscardOutBuffer();
 
 			var SLIP = new List<byte>();
 			Console.WriteLine("Slip size = " + size);
@@ -77,7 +78,10 @@ namespace Linklaget
 
 			for(int i = 0; i < size; i++)
 			{
-				Console.WriteLine(buf[i]);
+				if(size < 50)
+				{
+					Console.WriteLine(buf[i]);
+				}
 				if(buf[i] == 'A')
 				{
 					//SLIP.Append(Encoding.ASCII.GetBytes("BC"));
@@ -116,7 +120,8 @@ namespace Linklaget
 		/// </param>
 		public int receive(ref byte[] buf)
 		{
-			//serialPort.DiscardOutBuffer();
+//			serialPort.DiscardInBuffer();
+//			serialPort.DiscardOutBuffer();
 
 			//Read from serial
 			serialPort.Read(buffer, 0, buffer.Length);

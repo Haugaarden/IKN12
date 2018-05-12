@@ -50,12 +50,6 @@ namespace Application
 		private void receiveFile (String fileName, Transport transport)
 		{
 			var receivedData = new byte[BUFSIZE];
-//			transport.receive(ref received);
-//			Console.WriteLine(Encoding.ASCII.GetString(received));
-//			transport.receive(ref received);
-//			Console.WriteLine(Encoding.ASCII.GetString(received));
-//			transport.receive(ref received);
-//			Console.WriteLine(Encoding.ASCII.GetString(received));
 
 			//If file does not exist on the server, the user can input another filename. Won't continue untill a correct name is input
 			long fileSize = 0;
@@ -63,11 +57,8 @@ namespace Application
 			{
 				transport.send(Encoding.ASCII.GetBytes(fileName), fileName.Length);	//Sends filename to server
 
-
 				Console.WriteLine("Receiving filesize");
 				transport.receive(ref receivedData);	//Reads filesize from server
-				//fileSize = BitConverter.ToInt64(receivedData, 0);
-				//fileSize = (long)Encoding.ASCII.GetString(receivedData);
 				fileSize = Convert.ToInt64(Encoding.ASCII.GetString(receivedData));
 				Console.WriteLine("Filesize: " + fileSize);
 
@@ -79,6 +70,7 @@ namespace Application
 				}
 
 			} while(fileSize == 0);
+
 
 			string dataDir = "/root/ExFiles/SerialTransmission/";	//filepath to save file to
 			Directory.CreateDirectory(dataDir);	//Create directory if it does not exist
