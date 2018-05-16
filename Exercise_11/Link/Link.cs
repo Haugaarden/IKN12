@@ -80,7 +80,7 @@ namespace Linklaget
 			{
 				if(size < 50)
 				{
-					Console.WriteLine(buf[i]);
+					//Console.WriteLine(buf[i]);
 				}
 				if(buf[i] == 'A')
 				{
@@ -132,7 +132,7 @@ namespace Linklaget
 
 			for(int i = 0; i < buffer.Length; i++)
 			{
-				Console.WriteLine(buffer[i]);
+				//Console.WriteLine(buffer[i]);
 				if(buffer[i] == DELIMITER)
 				{
 					//Do nothing. Delimeters are ignored
