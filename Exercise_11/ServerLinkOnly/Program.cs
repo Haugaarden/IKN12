@@ -28,9 +28,12 @@ namespace ServerLinkOnly
 
 			string output = "AXBY Sut mig";
 
-			link.send(Encoding.ASCII.GetBytes(output), output.Length);
+			for(int i = 0; i<3; i++)
+			{
+				link.send(Encoding.ASCII.GetBytes(output), output.Length);
+				Console.WriteLine("Sent");
+			}
 
-			Console.WriteLine("Sent");
 		}
 	}
 }

@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_client", "file_client\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIB", "LIB\LIB.csproj", "{D8DF9D64-4B60-4D4C-9782-733750DEA33B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLinkOnly", "ServerSlipOnly\ServerLinkOnly.csproj", "{53517EE0-5D9C-4759-94DF-15E769E9C43E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientLinkOnly", "ClientLinkOnly\ClientLinkOnly.csproj", "{9AF444E8-7909-40FE-9D54-C88151072B55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLinkOnly", "ServerLinkOnly\ServerLinkOnly.csproj", "{53517EE0-5D9C-4759-94DF-15E769E9C43E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

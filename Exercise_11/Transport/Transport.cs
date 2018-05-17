@@ -242,18 +242,23 @@ namespace Transportlaget
 			{
 				recvSize = 0;
 				// Will time out while waiting, so must catch 
-				while(recvSize == 0)
+				while(recvSize == 0 || recvSize == -1)
 				{
 					try
 					{
 						recvSize = link.receive(ref buffer);	//returns length of received byte array
+						if(recvSize == -1)
+						{
+							sendAck(false); 
+							System.Threading.Thread.Sleep(200);
 
+						}
 					} catch(Exception)
 					{
 					}
 				}
 
-				Console.WriteLine($"TRANSMIT #{++transmitCount}");
+				Console.WriteLine("TRANSMIT #" + ++transmitCount);
 
 				if(checksum.checkChecksum(buffer, recvSize))
 				{

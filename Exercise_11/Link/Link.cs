@@ -120,52 +120,44 @@ namespace Linklaget
 		/// </param>
 		public int receive(ref byte[] buf)
 		{
-//			serialPort.DiscardInBuffer();
-//			serialPort.DiscardOutBuffer();
+			int size = serialPort.Read(buffer, 0, buffer.Length);
 
-			//Read from serial
-			serialPort.Read(buffer, 0, buffer.Length);
-
-			//Convert from SLIP to regular string
-			var DeSLIP = new List<byte>(); 
-			int delimeterCount = 0;
-
-			for(int i = 0; i < buffer.Length; i++)
+			int bufIndex = 0;
+			// Make sure first index is DELIMITER
+			if (buffer [0] == DELIMITER) 
 			{
-				//Console.WriteLine(buffer[i]);
-				if(buffer[i] == DELIMITER)
-				{
-					//Do nothing. Delimeters are ignored
-					delimeterCount++;
 
-				} 
-				if(delimeterCount >= 2)
+				// Loop through from next index
+				for (int i = 1; i < size; i++) 
 				{
-					break;
-				} else if (buffer[i] == DELIMITER)
-				{
-					//do nothing
-				}else if(buffer[i] == 'B')
-				{
-					if(buffer[i + 1] == 'C')
+
+					if (buffer [i] == 'B') 
 					{
-						DeSLIP.Add((byte)'A');
-						i++;
-					} else if(buffer[i + 1] == 'D')
-					{
-						DeSLIP.Add((byte)'B');
-						i++;
-					}
-				} else
-				{
-					DeSLIP.Add((byte)buffer[i]);
+						// Must check on next index to insert A or B
+						switch (buffer [i + 1]) 
+						{
+						case (byte)'C':
+							buf [bufIndex++] = (byte)'A';
+							i++;
+							break;
+						case (byte)'D':
+							buf [bufIndex++] = (byte)'B';	
+							i++;
+							break;
+						}
+					} 
+					else if (buffer [i] == DELIMITER)
+						break;
+					else 
+						buf [bufIndex++] = buffer [i];
 				}
+			} 
+			else 
+			{
+				return -1;
 			}
 
-			//buf = DeSLIP.ToArray();
-			Array.Copy(DeSLIP.ToArray(), buf, DeSLIP.Count);
-			Console.WriteLine("Deslip size " + (DeSLIP.Count));
-			return DeSLIP.Count;
+			return bufIndex;
 		}
 	}
 }
