@@ -66,6 +66,7 @@ namespace Transportlaget
 			buffer = new byte[BUFSIZE + (int)TransSize.ACKSIZE];
 			seqNo = 0;
 			ack_seqNo = DEFAULT_SEQNO;
+			old_seqNo = DEFAULT_SEQNO;
 			errorCount = 0;
 			transmitCount = 0;
 			dataReceived = false;
@@ -79,7 +80,6 @@ namespace Transportlaget
 		/// </returns>
 		private byte receiveAck()
 		{
-			//byte seqNoL = new byte();
 			Console.WriteLine("receiveAck()");
 			recvSize = link.receive(ref buffer);
 			dataReceived = true;
@@ -89,16 +89,12 @@ namespace Transportlaget
 				Console.WriteLine("Acksize correct");
 				dataReceived = false;
 				if(!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
-				   //buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
 				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
-					//ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO];	//No increment if error
-					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2); // increment if error
 					Console.WriteLine("Error in received ack");
 					ack_seqNo = (byte)((ack_seqNo + 1) % 2);
 				} else
 				{
-					//ack_seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);	//increments seqNo if no checkSum error
 					ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO]; // no increment if no error
 				}
 			}
@@ -118,8 +114,8 @@ namespace Transportlaget
 		{
 			Console.WriteLine("Sending Ack: " + ackType);
 			byte[] ackBuf = new byte[(int)TransSize.ACKSIZE];
-			ackBuf[(int)TransCHKSUM.SEQNO] = (byte)
-				(ackType ? (byte)buffer[(int)TransCHKSUM.SEQNO] : (byte)(buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+			ackBuf[(int)TransCHKSUM.SEQNO] = 
+				(byte)(ackType ? (byte)buffer[(int)TransCHKSUM.SEQNO] : (byte)(buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
@@ -145,14 +141,15 @@ namespace Transportlaget
 		public void send(byte[] buf, int size)
 		{
 
-			// Reset buffer
-			for (int i = 0; i < buffer.Length; i++) 
-			{
-				buffer [i] = 0;
-			}
 
 			do
 			{
+				// Reset buffer
+				for (int i = 0; i < buffer.Length; i++) 
+				{
+					buffer [i] = 0;
+				}
+
 				//Seq
 				buffer [(int)TransCHKSUM.SEQNO] = seqNo;
 				//Type
@@ -165,11 +162,11 @@ namespace Transportlaget
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-				if(transmitCount == 3) // Simulate noise
-				{
-					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
-				}
+//				if(transmitCount == 3) // Simulate noise
+//				{
+//					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+//					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
+//				}
 
 				if (transmitCount == 5)
 					transmitCount = 0;
@@ -250,7 +247,7 @@ namespace Transportlaget
 						if(recvSize == -1)
 						{
 							sendAck(false); 
-							System.Threading.Thread.Sleep(200);
+							System.Threading.Thread.Sleep(250);
 
 						}
 					} catch(Exception)
@@ -258,7 +255,7 @@ namespace Transportlaget
 					}
 				}
 
-				Console.WriteLine("TRANSMIT #" + ++transmitCount);
+				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
 				if(checksum.checkChecksum(buffer, recvSize))
 				{

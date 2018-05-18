@@ -46,7 +46,7 @@ namespace Linklaget
 			if(!serialPort.IsOpen)
 				serialPort.Open();
 
-			buffer = new byte[(BUFSIZE * 2)];
+			buffer = new byte[(BUFSIZE * 2) + 4];
 
 			// Uncomment the next line to use timeout
 			serialPort.ReadTimeout = 500;
@@ -66,25 +66,15 @@ namespace Linklaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-//			serialPort.DiscardInBuffer();
-//			serialPort.DiscardOutBuffer();
-
 			var SLIP = new List<byte>();
 			Console.WriteLine("Slip size = " + size);
-			// implement SLIP
-			//var SLIP = new StringBuilder(); 
 
 			SLIP.Add(DELIMITER);
 
 			for(int i = 0; i < size; i++)
 			{
-				if(size < 50)
-				{
-					//Console.WriteLine(buf[i]);
-				}
 				if(buf[i] == 'A')
 				{
-					//SLIP.Append(Encoding.ASCII.GetBytes("BC"));
 					SLIP.Add((byte)'B');
 					SLIP.Add((byte)'C');
 				} else if(buf[i] == 'B')
