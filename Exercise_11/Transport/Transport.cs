@@ -123,12 +123,12 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-			if(++transmitCount == 50) // Simulate noise
-			{
-				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
-				transmitCount = 0;
-			}
+//			if(++transmitCount == 50) // Simulate noise
+//			{
+//				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+//				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
+//				transmitCount = 0;
+//			}
 
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
