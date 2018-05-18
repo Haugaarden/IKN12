@@ -40,6 +40,10 @@ namespace Transportlaget
 		/// </summary>
 		private int errorCount;
 		/// <summary>
+		/// The maximum error count.
+		/// </summary>
+		private int maxErrors = 10;
+		/// <summary>
 		/// The transmit count.
 		/// </summary>
 		private int transmitCount;
@@ -119,12 +123,12 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-//			if(++transmitCount == 20) // Simulate noise
-//			{
-//				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-//				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
-//				transmitCount = 0;
-//			}
+			if(++transmitCount == 1) // Simulate noise
+			{
+				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
+				transmitCount = 0;
+			}
 
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
@@ -140,8 +144,6 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-
-
 			do
 			{
 				// Reset buffer
@@ -162,11 +164,11 @@ namespace Transportlaget
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-//				if(transmitCount == 3) // Simulate noise
-//				{
-//					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-//					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
-//				}
+				if(transmitCount == 3) // Simulate noise
+				{
+					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
+				}
 
 				if (transmitCount == 5)
 					transmitCount = 0;
@@ -202,17 +204,12 @@ namespace Transportlaget
 				errorCount++;
 				Console.WriteLine ("\tErrorcount: " + errorCount + "\n");
 
-			}while ((errorCount < 5));
+			}while ((errorCount < maxErrors));
 
-			if (errorCount >= 5) 
+			if (errorCount >= maxErrors) 
 			{
 				Console.WriteLine ("With errorcount " + errorCount + ", I am out.");
 				Environment.Exit (1);
-			}
-
-			for (int i = 0; i < buffer.Length; i++) 
-			{
-				buffer [i] = 0;
 			}
 
 			seqNo = (byte)((seqNo + 1) % 2);
