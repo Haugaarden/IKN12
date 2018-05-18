@@ -65,12 +65,6 @@ namespace Application
 		/// </param>
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
-//			string sending = "AXBY";
-//			var bArray = Encoding.ASCII.GetBytes(sending);
-//			transport.send(bArray, bArray.Length);
-//			transport.send(bArray, bArray.Length);
-//			transport.send(bArray, bArray.Length);
-
 			Stream fileStream = File.OpenRead(fileName);	//Opens filestream
 
 			var fileBuffer = new byte[BUFSIZE];	//Buffer to contain parts of the file
