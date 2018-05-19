@@ -114,38 +114,37 @@ namespace Linklaget
 
 			int bufIndex = 0;
 			// Make sure first index is DELIMITER
-			if(size != 0)
+			if (buffer [0] == DELIMITER) 
 			{
-				if(buffer[0] == DELIMITER)
+
+				// Loop through from next index
+				for (int i = 1; i < size; i++) 
 				{
 
-					// Loop through from next index
-					for(int i = 1; i < size; i++)
+					if (buffer [i] == 'B') 
 					{
-
-						if(buffer[i] == 'B')
+						// Must check on next index to insert A or B
+						switch (buffer [i + 1]) 
 						{
-							// Must check on next index to insert A or B
-							switch(buffer[i + 1])
-							{
-							case (byte)'C':
-								buf[bufIndex++] = (byte)'A';
-								i++;
-								break;
-							case (byte)'D':
-								buf[bufIndex++] = (byte)'B';	
-								i++;
-								break;
-							}
-						} else if(buffer[i] == DELIMITER)
+						case (byte)'C':
+							buf [bufIndex++] = (byte)'A';
+							i++;
 							break;
-						else
-							buf[bufIndex++] = buffer[i];
-					}
-				} else
-				{
-					return -1;
+						case (byte)'D':
+							buf [bufIndex++] = (byte)'B';	
+							i++;
+							break;
+						}
+					} 
+					else if (buffer [i] == DELIMITER)
+						break;
+					else 
+						buf [bufIndex++] = buffer [i];
 				}
+			} 
+			else 
+			{
+				return -1;
 			}
 
 			return bufIndex;
