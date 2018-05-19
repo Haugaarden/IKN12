@@ -164,7 +164,7 @@ namespace Transportlaget
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-				if(transmitCount == 3) // Simulate noise
+				if(transmitCount == 10) // Simulate noise
 				{
 					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
 					Console.WriteLine($"Noise! - transmission is spoiled");
@@ -241,8 +241,8 @@ namespace Transportlaget
 						recvSize = link.receive(ref buffer);	//returns length of received byte array
 						if(recvSize == -1)
 						{
-							System.Threading.Thread.Sleep(250);
 							sendAck(false); 
+							System.Threading.Thread.Sleep(250);
 
 						}
 					} catch(Exception)
