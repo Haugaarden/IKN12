@@ -116,7 +116,6 @@ namespace Linklaget
 			// Make sure first index is DELIMITER
 			if(size != 0)
 			{
-				Console.WriteLine(size);
 				if(buffer[0] == DELIMITER)
 				{
 
