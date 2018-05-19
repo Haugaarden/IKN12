@@ -159,7 +159,7 @@ namespace Transportlaget
 
 				Array.Copy(buf, 0, buffer, 4, size);
 
-				//the first two bytes will be filled with checkSum here
+				//Tilføjer de to første "bytes" på buf
 				checksum.calcChecksum (ref buffer, buffer.Length);
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
@@ -167,9 +167,11 @@ namespace Transportlaget
 				if(transmitCount == 3) // Simulate noise
 				{
 					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-					Console.WriteLine($"Noise! - transmission is spoiled");
-					transmitCount = 0;
+					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
 				}
+
+				if (transmitCount == 5)
+					transmitCount = 0;
 
 				ack_seqNo = seqNo;
 				try
@@ -241,8 +243,8 @@ namespace Transportlaget
 						recvSize = link.receive(ref buffer);	//returns length of received byte array
 						if(recvSize == -1)
 						{
-							System.Threading.Thread.Sleep(250);
 							sendAck(false); 
+							System.Threading.Thread.Sleep(250);
 
 						}
 					} catch(Exception)

@@ -71,7 +71,7 @@ namespace Application
 
 			int bytesToSend = 0;
 
-			while((bytesToSend = fileStream.Read(fileBuffer, 0, fileBuffer.Length)) > 0) //keep reading from fileStream until there are no bytes left to read
+			while((bytesToSend = fileStream.Read(fileBuffer, 0, fileBuffer.Length)) > 0) //I exist to keep sending bytes until I only got 0 bytes to send left 
 			{
 				transport.send(fileBuffer, bytesToSend); //I must send that byte
 
