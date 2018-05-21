@@ -66,29 +66,29 @@ namespace Linklaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
+			//Make frame in this byte list
 			var SLIP = new List<byte>();
-			Console.WriteLine("Slip size = " + size);
 
 			SLIP.Add(DELIMITER);
 
 			for(int i = 0; i < size; i++)
 			{
-				if(buf[i] == 'A')
+				if(buf[i] == 'A')	//If data is the same as DELIMITER 'A', replace with "BC"
 				{
 					SLIP.Add((byte)'B');
 					SLIP.Add((byte)'C');
-				} else if(buf[i] == 'B')
+				} else if(buf[i] == 'B')	//If data is 'B', replace with "BD"
 				{
 					SLIP.Add((byte)'B');
 					SLIP.Add((byte)'D');
 				} else
 				{
-					SLIP.Add(buf[i]);
+					SLIP.Add(buf[i]);	//Add all other data
 				}
 			}
 			SLIP.Add(DELIMITER);
 
-			//Send over serial
+			//Send the frame
 			try 
 			{
 				serialPort.Write(SLIP.ToArray(), 0, SLIP.Count);
@@ -120,31 +120,29 @@ namespace Linklaget
 				// Loop through from next index
 				for (int i = 1; i < size; i++) 
 				{
-
 					if (buffer [i] == 'B') 
 					{
 						// Must check on next index to insert A or B
-						switch (buffer [i + 1]) 
+						if(buffer[i + 1] == (byte)'C')
 						{
-						case (byte)'C':
-							buf [bufIndex++] = (byte)'A';
+							buf[bufIndex++] = (byte)'A';
 							i++;
-							break;
-						case (byte)'D':
-							buf [bufIndex++] = (byte)'B';	
+						}
+						else if(buffer[i + 1] == (byte)'D')
+						{
+							buf[bufIndex++] = (byte)'B';	
 							i++;
-							break;
 						}
 					} 
-					else if (buffer [i] == DELIMITER)
+					else if (buffer [i] == DELIMITER)	//Break after second DELIMITER
 						break;
 					else 
-						buf [bufIndex++] = buffer [i];
+						buf [bufIndex++] = buffer [i];	//Add the received byte to buf
 				}
 			} 
 			else 
 			{
-				return -1;
+				return -1;	//Indicates that first character wasn't the DELIMITER
 			}
 
 			return bufIndex;

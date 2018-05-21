@@ -96,7 +96,7 @@ namespace Transportlaget
 				   buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
 					Console.WriteLine("Error in received ack");
-					ack_seqNo = (byte)((ack_seqNo + 1) % 2);
+					ack_seqNo = (byte)((ack_seqNo + 1) % 2);	//increment if error
 				} else
 				{
 					ack_seqNo = (byte)buffer[(int)TransCHKSUM.SEQNO]; // no increment if no error
@@ -123,11 +123,11 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-//			if(++transmitCount == 50) // Simulate noise
+//			if((++transmitCount % 50) == 0) // Simulate noise
 //			{
 //				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
 //				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
-//				transmitCount = 0;
+//				//transmitCount = 0;
 //			}
 
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
@@ -159,19 +159,19 @@ namespace Transportlaget
 
 				Array.Copy(buf, 0, buffer, 4, size);
 
-				//Tilføjer de to første "bytes" på buf
+				//Adds checksum into first two bytes
 				checksum.calcChecksum (ref buffer, buffer.Length);
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-				if(transmitCount == 3) // Simulate noise
-				{
-					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
-				}
+//				if((transmitCount % 100) == 0) // Simulate noise
+//				{
+//					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+//					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
+//				}
 
-				if (transmitCount == 5)
-					transmitCount = 0;
+//				if (transmitCount == 5)
+//					transmitCount = 0;
 
 				ack_seqNo = seqNo;
 				try
@@ -208,7 +208,7 @@ namespace Transportlaget
 
 			if (errorCount >= maxErrors) 
 			{
-				Console.WriteLine ("With errorcount " + errorCount + ", I am out.");
+				Console.WriteLine ("With errorcount " + errorCount + ", Server is out");
 				Environment.Exit (1);
 			}
 
@@ -254,7 +254,7 @@ namespace Transportlaget
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-				if(checksum.checkChecksum(buffer, recvSize))
+				if(checksum.checkChecksum(buffer, recvSize))	//if checksum is correct
 				{
 					Console.WriteLine("Data pack OK.");
 
