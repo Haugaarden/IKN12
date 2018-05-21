@@ -11,10 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_client", "file_client\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIB", "LIB\LIB.csproj", "{D8DF9D64-4B60-4D4C-9782-733750DEA33B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientLinkOnly", "ClientLinkOnly\ClientLinkOnly.csproj", "{9AF444E8-7909-40FE-9D54-C88151072B55}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLinkOnly", "ServerLinkOnly\ServerLinkOnly.csproj", "{53517EE0-5D9C-4759-94DF-15E769E9C43E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,10 +21,6 @@ Global
 		{421BDA4C-999D-4B14-B645-E15BA7136554}.Debug|x86.Build.0 = Debug|x86
 		{421BDA4C-999D-4B14-B645-E15BA7136554}.Release|x86.ActiveCfg = Release|x86
 		{421BDA4C-999D-4B14-B645-E15BA7136554}.Release|x86.Build.0 = Release|x86
-		{53517EE0-5D9C-4759-94DF-15E769E9C43E}.Debug|x86.ActiveCfg = Debug|x86
-		{53517EE0-5D9C-4759-94DF-15E769E9C43E}.Debug|x86.Build.0 = Debug|x86
-		{53517EE0-5D9C-4759-94DF-15E769E9C43E}.Release|x86.ActiveCfg = Release|x86
-		{53517EE0-5D9C-4759-94DF-15E769E9C43E}.Release|x86.Build.0 = Release|x86
 		{6D10C85B-63E3-416B-A3B8-0E6498B7C1C1}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{6D10C85B-63E3-416B-A3B8-0E6498B7C1C1}.Debug|x86.Build.0 = Debug|Any CPU
 		{6D10C85B-63E3-416B-A3B8-0E6498B7C1C1}.Release|x86.ActiveCfg = Release|Any CPU
@@ -37,10 +29,6 @@ Global
 		{981C1C09-64A7-47CD-A093-30083CCFFD03}.Debug|x86.Build.0 = Debug|Any CPU
 		{981C1C09-64A7-47CD-A093-30083CCFFD03}.Release|x86.ActiveCfg = Release|Any CPU
 		{981C1C09-64A7-47CD-A093-30083CCFFD03}.Release|x86.Build.0 = Release|Any CPU
-		{9AF444E8-7909-40FE-9D54-C88151072B55}.Debug|x86.ActiveCfg = Debug|x86
-		{9AF444E8-7909-40FE-9D54-C88151072B55}.Debug|x86.Build.0 = Debug|x86
-		{9AF444E8-7909-40FE-9D54-C88151072B55}.Release|x86.ActiveCfg = Release|x86
-		{9AF444E8-7909-40FE-9D54-C88151072B55}.Release|x86.Build.0 = Release|x86
 		{D8DF9D64-4B60-4D4C-9782-733750DEA33B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D8DF9D64-4B60-4D4C-9782-733750DEA33B}.Debug|x86.Build.0 = Debug|Any CPU
 		{D8DF9D64-4B60-4D4C-9782-733750DEA33B}.Release|x86.ActiveCfg = Release|Any CPU
