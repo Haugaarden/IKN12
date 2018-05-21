@@ -123,12 +123,11 @@ namespace Transportlaget
 			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
 
-//			if((++transmitCount % 50) == 0) // Simulate noise
-//			{
-//				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-//				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
-//				//transmitCount = 0;
-//			}
+			if((++transmitCount % 10) == 0) // Simulate noise
+			{
+				ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+				Console.WriteLine("Noise! byte #1 is spoiled in the second transmitted ACK-package");
+			}
 
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
@@ -164,14 +163,11 @@ namespace Transportlaget
 
 				Console.WriteLine($"TRANSMIT #{++transmitCount}");
 
-//				if((transmitCount % 100) == 0) // Simulate noise
-//				{
-//					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-//					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
-//				}
-
-//				if (transmitCount == 5)
-//					transmitCount = 0;
+				if((transmitCount % 5) == 0) // Simulate noise
+				{
+					buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+					Console.WriteLine($"Noise! - pack #{transmitCount} is spoiled");
+				}
 
 				ack_seqNo = seqNo;
 				try
